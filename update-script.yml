@@ -1,6 +1,7 @@
 ---
 - hosts: all
-  become: "{{ inventory_hostname != 'OpenVPN' }}"  # Conditionally enable become based on the host
+  become: "{{ inventory_hostname != 'OpenVPN' }}"
+  become_method: su  # Use su as the privilege escalation method
 
   tasks:
     - name: update apt packages
