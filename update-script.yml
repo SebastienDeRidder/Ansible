@@ -1,10 +1,25 @@
 ---
 - hosts: all
   become: true
-  become_method: su  # Use su as the privilege escalation method
-
   tasks:
-    - name: update apt packages
+    - name: Update APT package cache
+      apt:
+        update_cache: yes
+
+    - name: Upgrade APT packages
       apt:
         upgrade: yes
-        update_cache: yes
+        autoremove: no
+
+    - name: Perform distribution upgrade
+      apt:
+        upgrade: dist
+        autoremove: no
+
+    - name: Clean APT package cache
+      apt:
+        autoclean: yes
+
+    - name: Remove unused APT packages
+      apt:
+        autoremove: yes
