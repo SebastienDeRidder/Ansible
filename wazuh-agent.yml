@@ -17,9 +17,8 @@
         wazuh_agent_name: "{{ hostname_result.stdout }}"
 
     - name: Install Wazuh Agent
-      deb:
+      apt:
         deb: "/tmp/wazuh-agent.deb"
-        state: present
       environment:
         WAZUH_MANAGER: "192.168.0.110"
         WAZUH_AGENT_NAME: "{{ wazuh_agent_name }}"
