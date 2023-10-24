@@ -1,0 +1,25 @@
+---
+- name: Deploy Wazuh Agent
+  hosts: all  # Replace with the target host or group of hosts
+  become: true
+  tasks:
+    - name: Download Wazuh Agent Package
+      get_url:
+        url: "https://packages.wazuh.com/4.x/apt/pool/main/w/wazuh-agent_4.4.5-1_amd64.deb"
+        dest: "/tmp/wazuh-agent.deb"
+
+    - name: Get Hostname
+      shell: "hostname"
+      register: hostname_result
+
+    - name: Set WAZUH_AGENT_NAME to Hostname
+      set_fact:
+        wazuh_agent_name: "{{ hostname_result.stdout }}"
+
+    - name: Install Wazuh Agent
+      deb:
+        deb: "/tmp/wazuh-agent.deb"
+        state: present
+      environment:
+        WAZUH_MANAGER: "192.168.0.110"
+        WAZUH_AGENT_NAME: "{{ wazuh_agent_name }}"
