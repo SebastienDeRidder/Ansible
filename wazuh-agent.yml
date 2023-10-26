@@ -1,24 +1,42 @@
+# ---
+# - name: Deploy Wazuh Agent
+#   hosts: all  # Replace with the target host or group of hosts
+#   become: true
+#   tasks:
+#     - name: Download Wazuh Agent Package
+#       get_url:
+#         url: "https://packages.wazuh.com/4.x/apt/pool/main/w/wazuh-agent_4.4.5-1_amd64.deb"
+#         dest: "/tmp/wazuh-agent.deb"
+
+#     - name: Get Hostname
+#       shell: "hostname"
+#       register: hostname_result
+
+#     - name: Set WAZUH_AGENT_NAME to Hostname
+#       set_fact:
+#         wazuh_agent_name: "{{ hostname_result.stdout }}"
+
+#     - name: Install Wazuh Agent
+#       apt:
+#         deb: "/tmp/wazuh-agent.deb"
+#       environment:
+#         WAZUH_MANAGER: "192.168.0.110"
+#         WAZUH_AGENT_NAME: "{{ wazuh_agent_name }}"
+
+
 ---
-- name: Deploy Wazuh Agent
-  hosts: all  # Replace with the target host or group of hosts
+- hosts: all
   become: true
-  tasks:
-    - name: Download Wazuh Agent Package
-      get_url:
-        url: "https://packages.wazuh.com/4.x/apt/pool/main/w/wazuh-agent_4.4.5-1_amd64.deb"
-        dest: "/tmp/wazuh-agent.deb"
-
-    - name: Get Hostname
-      shell: "hostname"
-      register: hostname_result
-
-    - name: Set WAZUH_AGENT_NAME to Hostname
-      set_fact:
-        wazuh_agent_name: "{{ hostname_result.stdout }}"
-
-    - name: Install Wazuh Agent
-      apt:
-        deb: "/tmp/wazuh-agent.deb"
-      environment:
-        WAZUH_MANAGER: "192.168.0.110"
-        WAZUH_AGENT_NAME: "{{ wazuh_agent_name }}"
+  become_user: root
+  roles:
+    - ../roles/wazuh/ansible-wazuh-agent
+  vars:
+    wazuh_managers:
+      - address: 192.168.0.110
+        port: 1514
+        protocol: tcp
+        api_port: 55000
+        api_proto: 'http'
+        api_user: ansible
+        max_retries: 5
+        retry_interval: 5
